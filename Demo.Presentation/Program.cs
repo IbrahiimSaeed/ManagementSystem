@@ -1,9 +1,13 @@
 using Demo.BusinessLogic.Mappings;
+using Demo.BusinessLogic.Services.AttachmentService;
 using Demo.BusinessLogic.Services.Classes;
+using Demo.BusinessLogic.Services.EmailSender;
 using Demo.BusinessLogic.Services.Interfaces;
 using Demo.DataAccess.Data.Contexts;
 using Demo.DataAccess.Data.Repositories.Classes;
 using Demo.DataAccess.Data.Repositories.Interfaces;
+using Demo.DataAccess.Models.IdentityModule;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +35,10 @@ namespace Demo.Presentation
             //builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();//DI
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();//DI
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();//DI
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddDefaultTokenProviders(); //For token [Like Reset Password , ...]
             builder.Services.AddAutoMapper(Mapping => Mapping.AddProfile(new MappingProfile()));//Auto Mapper
 
             var app = builder.Build();
@@ -47,11 +55,12 @@ namespace Demo.Presentation
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Register}/{id?}");
 
             app.Run();
         }

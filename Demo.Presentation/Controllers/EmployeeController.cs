@@ -5,10 +5,12 @@ using Demo.BusinessLogic.Services.Interfaces;
 using Demo.DataAccess.Models.EmployeeModule;
 using Demo.DataAccess.Models.Shared;
 using Demo.Presentation.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Presentation.Controllers
 {
+    [Authorize]
     public class EmployeeController(IEmployeeService _employeeService ,IWebHostEnvironment _env,ILogger<EmployeeController> _logger) : Controller
     {
         #region Index
@@ -47,6 +49,7 @@ namespace Demo.Presentation.Controllers
                         Gender = employeeViewModel.Gender,
                         PhoneNumber = employeeViewModel.PhoneNumber,
                         HiringDate = employeeViewModel.HiringDate,
+                        Image =employeeViewModel.Image
                     });
                     if (result > 0)
                     {
@@ -107,7 +110,7 @@ namespace Demo.Presentation.Controllers
                 HiringDate = employee.HiringDate,
                 Gender = Enum.Parse<Gender>(employee.Gender),
                 EmployeeType = Enum.Parse<EmployeeType>(employee.EmployeeType),
-                DepartmentId = employee.DepartmentId
+                DepartmentId = employee.DepartmentId,
             };
             return View(employeeViewModel);
         }
@@ -132,7 +135,8 @@ namespace Demo.Presentation.Controllers
                     Salary  = employeeViewModel.Salary,
                     DepartmentId = employeeViewModel.DepartmentId,
                     PhoneNumber= employeeViewModel.PhoneNumber,
-                    Id = id.Value
+                    Id = id.Value,
+                    Image = employeeViewModel.Image
                 });
                 if (result > 0)
                     return RedirectToAction("Index");

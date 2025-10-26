@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Demo.BusinessLogic.DTOS.EmployeeDTOS;
+using Demo.BusinessLogic.Services.AttachmentService;
 using Demo.BusinessLogic.Services.Interfaces;
 using Demo.DataAccess.Data.Repositories.Interfaces;
 using Demo.DataAccess.Models.EmployeeModule;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Demo.BusinessLogic.Services.Classes
 {
-    public class EmployeeService(IUnitOfWork _unitOfWork,IMapper _mapper) : IEmployeeService
+    public class EmployeeService(IUnitOfWork _unitOfWork,IMapper _mapper,IAttachmentService _attachmentService) : IEmployeeService
     {
         public IEnumerable<EmployeeDto> GetAllEmployees(string? EmployeeSearchName, bool withTracking = false)
         {
@@ -32,13 +33,27 @@ namespace Demo.BusinessLogic.Services.Classes
         }
         public int CreateEmployee(CreateEmployeeDto employeeDto)
         {
-            var employee = _mapper.Map<CreateEmployeeDto,Employee>(employeeDto);
+            var employee = _mapper.Map<CreateEmployeeDto, Employee>(employeeDto);
+            if (employeeDto.Image is not null)
+            {
+                string? imgName = _attachmentService.Upload(employeeDto.Image, "images");
+                employee.ImageName = imgName;
+            }
             _unitOfWork.EmployeeRepository.Add(employee);
             return _unitOfWork.SaveChanges();
         }
 
         public int UpdateEmployee(UpdatedEmployeeDto employeeDto)
         {
+
+            if(employeeDto.Image is not null)
+            {
+                string? newImageName = _attachmentService.Upload(employeeDto.Image, "images");
+                if(newImageName is not null)
+                {
+                    employeeDto.ImageName = newImageName;
+                }
+            }
             _unitOfWork.EmployeeRepository.Update(_mapper.Map<UpdatedEmployeeDto, Employee>(employeeDto));
             return _unitOfWork.SaveChanges();
         }
