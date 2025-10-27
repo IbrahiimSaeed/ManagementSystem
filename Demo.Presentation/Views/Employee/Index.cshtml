@@ -57,7 +57,7 @@
                     <td><i class="fa @(employee.IsActive ? "fa-solid fa-circle-check text-success" : "fa-solid fa-circle-xmark text-danger")"></i></td>
                     <td>@employee.Gender</td>
                     @* Render Partial View*@
-                    <partial name="_ButtonsPartialView" model="employee.Id"></partial>
+                    <partial name="_ButtonsPartialView" model="employee.Id.ToString()"></partial>
                     <td>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@employee.Id">
                             <i class="fas fa-trash"></i> Delete
