@@ -1,6 +1,41 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-5">
+    <div class="text-center">
+        <h1 class="display-5 fw-bold text-primary mb-4">Privacy Policy</h1>
+        <p class="lead text-muted mb-4">
+            We value your privacy and are committed to protecting your personal information.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0 mx-auto" style="max-width: 800px;">
+        <div class="card-body p-4">
+            <h5 class="fw-semibold text-secondary mb-3">Data Protection</h5>
+            <p>
+                This system uses <strong>ASP.NET Identity</strong> to securely manage user authentication and authorization.
+                Your credentials are encrypted and stored safely in our database using industry-standard security practices.
+            </p>
+
+            <h5 class="fw-semibold text-secondary mt-4 mb-3">Data Usage</h5>
+            <p>
+                Information entered into the system is used solely for managing Employees and Departments.
+                We do not share or sell your data to any third parties.
+            </p>
+
+            <h5 class="fw-semibold text-secondary mt-4 mb-3">User Responsibility</h5>
+            <p>
+                Please keep your login credentials confidential. If you suspect unauthorized access,
+                change your password immediately and contact the administrator.
+            </p>
+
+            <div class="text-center mt-5">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary px-4">
+                    <i class="bi bi-house-door-fill me-2"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

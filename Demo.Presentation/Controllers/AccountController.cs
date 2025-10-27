@@ -110,6 +110,7 @@ namespace Demo.Presentation.Controllers
         [HttpGet]
         public IActionResult CheckYourInbox() => View();
         #endregion
+
         #region ResetPassword
         [HttpGet]
         public IActionResult ResetPassword(string email, string token)
@@ -137,5 +138,7 @@ namespace Demo.Presentation.Controllers
             return View(resetPasswordViewModel);
         }
         #endregion
+
+
     }
 }
