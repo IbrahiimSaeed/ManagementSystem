@@ -1,10 +1,14 @@
-﻿using Demo.Presentation.ViewModels.Identity;
+﻿using Demo.DataAccess.Models.IdentityModule;
+using Demo.Presentation.ViewModels.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Presentation.Controllers
 {
-    public class RoleController(RoleManager<IdentityRole> _roleManager ,IWebHostEnvironment _env) : Controller
+    [Authorize]
+    public class RoleController(RoleManager<IdentityRole> _roleManager ,UserManager<ApplicationUser> _userManager,
+        SignInManager<ApplicationUser> _signInManager,IWebHostEnvironment _env) : Controller
     {
         #region Index
         [HttpGet]
@@ -64,10 +68,17 @@ namespace Demo.Presentation.Controllers
             if (id is null) return BadRequest();
             var role = _roleManager.FindByIdAsync(id).Result;
             if (role == null) return NotFound();
+            var users = _userManager.Users.ToList();
             var roleVm = new RoleViewModel()
             {
                 Id = role.Id,
-                Name = role.Name
+                Name = role.Name,
+                Users = users.Select(user => new UserRoleViewModel
+                {
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    IsSelected = _userManager.IsInRoleAsync(user, role.Name).Result
+                }).ToList()
             };
             return View(roleVm);
         }
@@ -83,6 +94,23 @@ namespace Demo.Presentation.Controllers
                 if (role == null) return BadRequest();
                 role.Name = roleViewModel.Name;
                 var result = _roleManager.UpdateAsync(role).Result;
+                foreach(var userRole in roleViewModel.Users)
+                {
+                    var user = _userManager.FindByIdAsync(userRole.UserId).Result;
+                    if (user is not null)
+                    {
+                        if (userRole.IsSelected && !(_userManager.IsInRoleAsync(user, role.Name).Result))
+                        {
+                            _ = _userManager.AddToRoleAsync(user, role.Name).Result;
+                            _signInManager.RefreshSignInAsync(user).GetAwaiter().GetResult();
+                        }
+                        else if (!userRole.IsSelected && (_userManager.IsInRoleAsync(user, role.Name).Result))
+                        {
+                            _ = _userManager.RemoveFromRoleAsync(user, role.Name).Result;
+                            _signInManager.RefreshSignInAsync(user).GetAwaiter().GetResult();
+                        }
+                    }
+                }
                 if (result.Succeeded)
                     return RedirectToAction("Index");
                 else
