@@ -1,11 +1,13 @@
 ﻿using Demo.DataAccess.Models.IdentityModule;
 using Demo.Presentation.ViewModels.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Presentation.Controllers
 {
     //IWebHostEnvironment ==> For Check Environment In Catch 
+    [Authorize(Roles ="Admin")]
     public class UserController(UserManager<ApplicationUser> _userManager, IWebHostEnvironment _env) : Controller
     {
         #region Index
